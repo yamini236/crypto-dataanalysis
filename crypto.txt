@@ -1,0 +1,250 @@
+# Crypto Currency Analysis
+
+
+!pip install pandas_datareader
+
+#importing libraries
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+
+sns.set_style('whitegrid')
+plt.style.use("fivethirtyeight")
+%matplotlib inline
+from matplotlib.colors import LinearSegmentedColormap
+
+from datetime import datetime
+import warnings
+warnings.filterwarnings("ignore")
+from pandas_datareader.data import DataReader
+
+# Bitcoin
+
+Bitcoin (₿) is a decentralized digital currency that can be transferred on the peer-to-peer bitcoin network.Bitcoin transactions are verified by network nodes through cryptography and recorded in a public distributed ledger called a blockchain.
+1 Bitcoin(as of today) = 23,26,790(Rs)
+
+#bitcoin data
+btc = pd.read_csv("Bitcoin.csv",sep = ",")
+btc.head(5)
+
+#finding maximum value of bitcoin
+btcmax=btc[btc['Close']==max(btc.Close)]
+print(" The highest value of bitcoin")
+btcmax
+
+
+#learning about stats of bitcoin data(like mean,std etc..)
+btc.describe()
+
+#info about bitcoin data(memory usage,data types etc..)
+btc.info()
+
+#checing empty values in bitcoin data
+btc.isna().sum()
+
+# Dogecoin
+
+
+Dogecoin is a cryptocurrency created by software engineers Billy Markus and Jackson Palmer, who decided to create a payment system as a "joke", making fun of the wild speculation in cryptocurrencies at the time.
+1 Dogecoin(as of today) = 6.67(Rs)
+
+#dogecoin data
+doge = pd.read_csv("Meme Coin/Dogecoin.csv",sep = ",")
+doge.head(5)
+
+#finding maximum value of dogecoin
+dogemax=doge[doge['Close']==max(doge.Close)]
+print(" The highest value of dogecoin")
+dogemax
+
+#learning about stats of dogecoin data(like mean,std etc..)
+doge.describe()
+
+#info about dogecoin data(memory usage,data types etc..)
+doge.info()
+
+#checing empty values in dogecoin data
+doge.isna().sum()
+
+# Bitconnect
+
+Bitconnect (also spelled BitConnect and stylized bitconnect, ticker code BCC) was an open-source cryptocurrency that was connected with a high-yield investment program, a type of Ponzi scheme.
+After the platform administrators closed the earning platform on January 16, 2018, and refunded the users' investments in BCC following a 92% coin value crash, confidence was lost and the value of the coin plummeted to below $1 from a previous high of nearly $525.
+
+1 Bitconnect(as of today) = 52.91(Rs)
+
+#bitconnect data
+bit = pd.read_csv("Dead Coin/bitconnect.csv",sep = ",")
+bit.head(5)
+
+#finding maximum value of bitconnect
+bitmax=bit[bit['Close']==max(bit.Close)]
+print(" The highest value of bitconnect")
+bitmax
+
+#learning about stats of bitconnect data(like mean,std etc..)
+bit.describe()
+
+#info about bitconnect data(memory usage,data types etc..)
+bit.info()
+
+#checing empty values in bitconnect data
+bit.isna().sum()
+
+# Ethereum
+
+
+Ethereum is a decentralized, open-source blockchain with smart contract functionality. Ether is the native cryptocurrency of the platform. Among cryptocurrencies, Ether is second only to Bitcoin in market capitalization.
+1 Ethereum(as of today) = 1,56,532(Rs)
+
+#Ethereum data
+ether = pd.read_csv("Ethereum.csv",sep = ",")
+ether.head(5)
+
+
+#finding maximum value of ethereum
+ethermax=ether[ether['Close']==max(ether.Close)]
+print(" The highest value of Ethereum")
+ethermax
+
+#learning about stats of ethereum data(like mean,std etc..)
+ether.describe()
+
+#learning about stats of ethereum data(like mean,std etc..)
+ether.describe()
+
+#checing empty values in ethereum data
+ether.isna().sum()
+
+# Data Visualisation
+
+#Returns
+
+
+def to2018(df):
+    df18=equalize(df,bit)
+    return df18.iloc[:len(bit)]
+
+def equalize(df,dfs):
+    low=len(dfs)
+    high=len(df)
+    dff=high-low
+    
+    return df.iloc[dff:]
+
+btc18=to2018(btc)
+ether18=to2018(ether)
+crypto=["Bitcoin 2018","Bitcoin","Ethereum 2018","Ethereum","Bitconnect 2018","Dogecoin"]
+cryptoDf=[btc18,btc,ether18,ether,bit,doge]
+
+num_plots = 6
+total_cols = 2
+total_rows = 3
+for df in cryptoDf:
+    df['Daily Return'] = df['Close'].pct_change()
+fig, axs = plt.subplots(nrows=total_rows, ncols=total_cols,
+                        figsize=(14*total_cols, 7*total_rows), constrained_layout=True)
+for i, var in enumerate(crypto):
+    row = i//total_cols
+    pos = i % total_cols
+    cryptoDf[i]['Daily Return'].plot(ax=axs[row][pos], legend=True,color='#732C2C', linestyle='--', marker='.')
+    axs[row][pos].set_title(crypto[i])
+
+Conclusion- The following plots depicts the return in the stock market of respective currencies, which in turn informs us about the percentage change in price of each currency. 
+From the given plot we observer that the daily return in currency of ethereum and bitcoin was uneven in 2018, but according to 2020 stats it has imrproved and hence become even leading uniformity.
+
+#Etherum mountain graph to visualise market prices and share movements
+plt.figure(figsize=(8,5))
+sns.kdeplot(data=ether.Open,fill=True,color="skyblue")
+plt.show()
+
+#Bitconnect mountain graph to visualise market prices and share movements
+plt.figure(figsize=(8,5))
+sns.kdeplot(data=bit.Open,fill=True,color="skyblue")
+plt.show()
+
+#Bitcoin mountain graph to visualise market prices and share movements
+plt.figure(figsize=(8,5))
+sns.kdeplot(data=btc.Open,fill=True,color="skyblue")
+plt.show()
+
+#Dogecoin mountain graph to visualise market prices and share movements
+plt.figure(figsize=(8,5))
+sns.kdeplot(data=doge.Open,fill=True,color="skyblue")
+plt.show()
+
+# Correlation
+
+closeDf18=pd.DataFrame()
+closeDf18['btc']=btc18['Close']
+closeDf18['eth']=ether18['Close']
+closeDf18['bit']=bit['Close']
+returns18 = closeDf18.pct_change()
+returns18.head()
+
+btc=equalize(btc,ether)
+doge=equalize(doge,ether)
+
+
+closeDf=pd.DataFrame()
+closeDf['btc']=btc['Close']
+closeDf['ether']=ether['Close']
+closeDf['doge']=doge['Close']
+
+
+returns = closeDf.pct_change()
+returns.head()
+
+sns.jointplot(data=returns18, x='btc', y="bit", kind='scatter',height=5)
+plt.show()
+
+sns.jointplot(data=returns, x='btc', y="doge", kind='scatter',height=5)
+plt.show()
+
+sns.jointplot(data=returns18, x='eth', y="bit", kind='scatter',height=5)
+plt.show()
+
+sns.jointplot(data=returns, x='ether', y='doge', kind='scatter',height=5)
+plt.show()
+
+Conclusion-The graph depicts that although bitconnect had very high returns compared to bitcoin or Ethereum, but it was that much risky to invest money in bitconnect.
+
+plt.figure(figsize=(10,6))
+sns.heatmap(returns.corr(), annot=True, cmap="Blues")
+plt.show()
+
+rets = returns18.dropna()
+
+area = np.pi * 20
+
+plt.figure(figsize=(10, 7))
+plt.scatter(rets.mean(), rets.std(), s=area)
+plt.xlabel('Expected return')
+plt.ylabel('Risk')
+
+for label, x, y in zip(rets.columns, rets.mean(), rets.std()):
+    plt.annotate(label, xy=(x, y), xytext=(50, 50), textcoords='offset points', ha='right', va='bottom', 
+                 arrowprops=dict(arrowstyle='-', color='#732C2C', connectionstyle='arc3,rad=-0.3'))
+
+Conclusion-The graph indicates that although bitconnect had very high returns compared to bitcoin or Ethereum, but it was that much risky to invest money in bitconnect.
+The value of bitconnect goes suddenly up and down and hence it is a risky stock to invest.
+
+rets = returns.dropna()
+
+area = np.pi * 20
+
+plt.figure(figsize=(10, 7))
+plt.scatter(rets.mean(), rets.std(), s=area)
+plt.xlabel('Expected return')
+plt.ylabel('Risk')
+
+for label, x, y in zip(rets.columns, rets.mean(), rets.std()):
+    plt.annotate(label, xy=(x, y), xytext=(50, 50), textcoords='offset points', ha='right', va='bottom', 
+                 arrowprops=dict(arrowstyle='-', color='#732C2C', connectionstyle='arc3,rad=-0.3'))
+
+Conclusion- The dogecoin was also as risky as bitconnect in the past
+
+From the graphs we can clearly observe that Ethereum, and Bitcoin are quite a lot safer than Dogecoin and Bitconnect.The reason is why they are surviving the fall in 2018 and will survive through current dip in price too. The fall of dogecoin is inevitable. Although Dogecoin is not a scam. But the cultural structure of dogecoin digs a grave for itself.
+
